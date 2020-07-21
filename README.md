@@ -1,6 +1,6 @@
 # Fuzzy Completion Clients
 
-Additional Clients for [Fuzzy Completion](https://github.com/ms-jpq/fancy-completion)
+Additional Clients for [Fancy Completion](https://github.com/ms-jpq/fancy-completion)
 
 ## Clients
 
