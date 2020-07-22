@@ -73,7 +73,7 @@ class TabNineResponse:
 async def init_lua(nvim: Nvim) -> Dict[str, int]:
     def cont() -> Dict[str, int]:
         nvim.api.exec_lua(
-            "fancy_completion_tabnine = require 'fancy_completion_tabnine'", ()
+            "fancy_completion_tabnine = require 'fancy-completion/tabnine'", ()
         )
         entry_kind = nvim.api.exec_lua(
             "return fancy_completion_tabnine.list_entry_kind()", ()
