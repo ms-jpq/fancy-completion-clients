@@ -2,8 +2,14 @@
 
 Additional Clients for [Fancy Completion](https://github.com/ms-jpq/fancy-completion)
 
+## Install
+
+Install [`Fancy Complete`](https://github.com/ms-jpq/fancy-completion) first, then:
+
+```VimL
+Plug 'ms-jpq/fancy-completion-clients', {'branch': 'nvim', 'do': ':UpdateRemotePlugins'}
+```
+
 ## Clients
 
-| name                                                                                       | source                                                            |
-| ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------- |
-| [Tabnine](https://github.com/ms-jpq/fancy-completion-clients/blob/nvim/clients/tabnine.py) | Fetches results from [TabNine](https://www.tabnine.com/) ML model |
+### [Tabnine](https://github.com/ms-jpq/fancy-completion-clients/blob/nvim/clients/tabnine.py)
