@@ -12,4 +12,10 @@ Plug 'ms-jpq/fancy-completion-clients', {'branch': 'nvim', 'do': ':UpdateRemoteP
 
 ## Clients
 
+Unlike the builtin sources, all of these clients are situational / require additional setup
+
 ### [Tabnine](https://github.com/ms-jpq/fancy-completion-clients/blob/nvim/clients/tabnine.py)
+
+Additional setup:
+
+You need to download the TabNine executable for your platform.

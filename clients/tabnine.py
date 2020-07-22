@@ -173,7 +173,7 @@ def parse_rows(
     old_prefix = t9.old_prefix
 
     for row in t9.results:
-        kind = entry_kind_lookup.get(cast(int, row.kind), "Unknown")
+        kind = entry_kind_lookup.get(cast(int, row.kind))
 
         yield SourceCompletion(
             position=position,
