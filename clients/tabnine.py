@@ -173,7 +173,7 @@ def parse_rows(
     old_prefix = t9.old_prefix
 
     for row in t9.results:
-        r_kind = row.get("kind")
+        r_kind = row.kind
         kind = entry_kind_lookup.get(r_kind, "Unknown") if r_kind else None
 
         yield SourceCompletion(
