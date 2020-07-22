@@ -2,7 +2,7 @@
   "sources": {
     "tabnine": {
       "config": {},
-      "enabled": true,
+      "enabled": false,
       "limit": 5,
       "main": "fancy-completion-clients/clients/tabnine.py",
       "priority": 5,
