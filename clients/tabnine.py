@@ -28,8 +28,8 @@ from typing import (
 from pynvim import Nvim
 from pynvim.api.buffer import Buffer
 
-from .c_pkgs.c_types import Source, SourceCompletion, SourceFeed, SourceSeed
 from .c_pkgs.c_nvim import call
+from .c_pkgs.c_types import Completion, Context, Seed, Source
 
 
 @dataclass(frozen=True)
@@ -151,32 +151,31 @@ async def buf_lines(nvim: Nvim) -> Sequence[str]:
     return await call(nvim, cont)
 
 
-async def encode_tabnine_request(nvim: Nvim, feed: SourceFeed) -> TabNineRequest:
-    row = feed.position.row
-    context = feed.context
+async def encode_tabnine_request(nvim: Nvim, context: Context) -> TabNineRequest:
+    row = context.position.row
     lines = await buf_lines(nvim)
     lines_before = lines[:row]
     lines_after = lines[row:]
     before = linesep.join(chain(lines_before, (context.line_before,)))
     after = linesep.join(chain((context.line_after,), lines_after))
 
-    l2 = TabNineRequestL2(before=before, after=after, filename=feed.filename)
+    l2 = TabNineRequestL2(before=before, after=after, filename=context.filename)
     l1 = TabNineRequestL1(Autocomplete=l2)
     req = TabNineRequest(request=l1)
     return req
 
 
 def parse_rows(
-    t9: TabNineResponse, feed: SourceFeed, entry_kind_lookup: Dict[int, str],
-) -> Iterator[SourceCompletion]:
-    position = feed.position
+    t9: TabNineResponse, context: Context, entry_kind_lookup: Dict[int, str],
+) -> Iterator[Completion]:
+    position = context.position
     old_prefix = t9.old_prefix
 
     for row in t9.results:
         r_kind = row.kind
         kind = entry_kind_lookup.get(r_kind, "Unknown") if r_kind else None
 
-        yield SourceCompletion(
+        yield Completion(
             position=position,
             old_prefix=old_prefix,
             new_prefix=row.new_prefix,
@@ -187,20 +186,20 @@ def parse_rows(
         )
 
 
-async def main(nvim: Nvim, chan: Queue, seed: SourceSeed) -> Source:
+async def main(nvim: Nvim, chan: Queue, seed: Seed) -> Source:
     tabnine_inst = tabnine_subproc()
     entry_kind = await init_lua(nvim)
     entry_kind_lookup = {v: k for k, v in entry_kind.items()}
 
-    async def source(feed: SourceFeed) -> AsyncIterator[SourceCompletion]:
+    async def source(context: Context) -> AsyncIterator[Completion]:
         if not tabnine_inst:
             pass
         else:
-            req = await encode_tabnine_request(nvim, feed=feed)
+            req = await encode_tabnine_request(nvim, context=context)
             resp = await tabnine_inst(req)
             if resp:
                 for row in parse_rows(
-                    resp, feed=feed, entry_kind_lookup=entry_kind_lookup
+                    resp, context=context, entry_kind_lookup=entry_kind_lookup
                 ):
                     yield row
 
