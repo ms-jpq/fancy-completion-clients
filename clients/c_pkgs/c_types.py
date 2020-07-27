@@ -1,12 +1,15 @@
+from asyncio import Queue
 from dataclasses import dataclass, field
-from typing import Any, AsyncIterator, Callable, Dict, Optional, Sequence
+from typing import Any, AsyncIterator, Awaitable, Callable, Optional, Sequence
+
+from pynvim import Nvim
 
 
 @dataclass(frozen=True)
 class Seed:
     limit: float
     timeout: float
-    config: Dict[str, Any]
+    config: Optional[Any] = None
 
 
 @dataclass(frozen=True)
@@ -15,6 +18,9 @@ class Position:
     col: int
 
 
+# |...                            line                            ...|
+# |...        line_before          🐭          line_after         ...|
+# |...   <syms_before><alum_before>🐭<alnums_after><syms_after>   ...|
 @dataclass(frozen=True)
 class Context:
     position: Position
@@ -39,8 +45,9 @@ class Context:
     syms_after: str
 
 
+# end exclusve
 @dataclass(frozen=True)
-class Edit:
+class LEdit:
     begin: Position
     end: Position
     new_text: str
@@ -57,7 +64,8 @@ class Completion:
     sortby: Optional[str] = None
     kind: Optional[str] = None
     doc: Optional[str] = None
-    edits: Sequence[Edit] = field(default_factory=tuple)
+    ledits: Sequence[LEdit] = field(default_factory=tuple)
 
 
 Source = Callable[[Context], AsyncIterator[Completion]]
+Factory = Callable[[Nvim, Queue, Seed], Awaitable[Source]]
