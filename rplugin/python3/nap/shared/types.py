@@ -17,6 +17,7 @@ from pynvim import Nvim
 @dataclass(frozen=True)
 class MatchOptions:
     min_match: int
+    transpose_band: int
     unifying_chars: Set[str]
 
 
@@ -72,6 +73,13 @@ class LEdit:
 
 
 @dataclass(frozen=True)
+class Snippet:
+    kind: str
+    content: str
+    match: str
+
+
+@dataclass(frozen=True)
 class Completion:
     position: Position
     old_prefix: str
@@ -83,7 +91,23 @@ class Completion:
     kind: Optional[str] = None
     doc: Optional[str] = None
     ledits: Sequence[LEdit] = field(default_factory=tuple)
+    snippet: Optional[Snippet] = None
 
 
 Source = Callable[[Context], AsyncIterator[Completion]]
 Factory = Callable[[Nvim, Queue, Seed], Awaitable[Source]]
+
+
+@dataclass(frozen=True)
+class SnippetSeed:
+    config: Dict[str, Any]
+
+
+@dataclass(frozen=True)
+class SnippetContext:
+    position: Position
+    snippet: Snippet
+
+
+SnippetEngine = Callable[[SnippetContext], Awaitable[None]]
+SnippetEngineFactory = Callable[[Nvim, SnippetSeed], Awaitable[SnippetEngine]]

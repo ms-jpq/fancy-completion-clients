@@ -1,6 +1,7 @@
 from asyncio import Future
 from os import linesep
 from typing import Any, Awaitable, Callable, TypeVar
+
 from pynvim import Nvim
 
 T = TypeVar("T")
