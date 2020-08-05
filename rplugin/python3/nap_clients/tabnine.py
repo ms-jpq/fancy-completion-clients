@@ -32,7 +32,7 @@ from pynvim.api.buffer import Buffer
 
 from .pkgs.consts import __artifacts__
 from .pkgs.nvim import call
-from .pkgs.types import Completion, Context, Position, Seed, Source
+from .pkgs.types import Completion, Context, Seed, Source
 
 __exec_home__ = join(__artifacts__, "binaries")
 
@@ -185,7 +185,7 @@ async def encode_tabnine_request(nvim: Nvim, context: Context) -> TabNineRequest
 def parse_rows(
     t9: TabNineResponse, context: Context, entry_kind_lookup: Dict[int, str],
 ) -> Iterator[Completion]:
-    position = Position(row=context.position.row, col=context.position.col + 1)
+    position = context.position
     old_prefix = t9.old_prefix
 
     for row in t9.results:
