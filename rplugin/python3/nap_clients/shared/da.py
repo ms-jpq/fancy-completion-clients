@@ -37,7 +37,7 @@ class ProcReturn:
 
 
 async def call(prog: str, *args: str, cwd: str) -> ProcReturn:
-    proc = await create_subprocess_exec(prog, *args, stdout=PIPE, stderr=PIPE)
+    proc = await create_subprocess_exec(prog, *args, stdout=PIPE, stderr=PIPE, cwd=cwd)
     stdout, stderr = await proc.communicate()
     code = cast(int, proc.returncode)
     return ProcReturn(code=code, out=stdout.decode(), err=stderr.decode())
@@ -48,14 +48,13 @@ class DownloadError(Exception):
 
 
 async def download(uri: str, dest: str, name: str) -> None:
+    makedirs(dest, exist_ok=True)
     if which("wget"):
-        ret = await call("wget", "-O", dest, "--", uri, cwd=dest)
+        ret = await call("wget", "-O", name, "--", uri, cwd=dest)
         if ret.code:
             raise DownloadError(ret.err)
     elif which("curl"):
-        ret = await call(
-            "curl", "--location", "--create-dirs", "--output", dest, "--", uri, cwd=dest
-        )
+        ret = await call("curl", "--location", "--output", name, "--", uri, cwd=dest)
         if ret.code:
             raise DownloadError(ret.err)
     else:
@@ -63,5 +62,6 @@ async def download(uri: str, dest: str, name: str) -> None:
 
 
 def unzip(path: str) -> None:
+    parent = dirname(path)
     with ZipFile(path) as zp:
-        zp.extractall()
+        zp.extractall(parent)

@@ -35,4 +35,4 @@ class Main:
             await install()
             await print(self.nvim, "done")
 
-        self._submit(inst)
+        self._submit(inst())
