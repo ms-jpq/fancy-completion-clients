@@ -12,7 +12,7 @@
       },
       "enabled": true,
       "limit": 3,
-      "main": "nap-clients/rplugin/python3/nap/dictionary.py",
+      "main": "nap-clients/rplugin/python3/nap_clients/dictionary.py",
       "rank": 50,
       "short_name": "D",
       "timeout": 100
@@ -21,7 +21,7 @@
       "config": {},
       "enabled": false,
       "limit": 5,
-      "main": "nap-clients/rplugin/python3/nap/tabnine.py",
+      "main": "nap-clients/rplugin/python3/nap_clients/tabnine.py",
       "priority": 5,
       "rank": 100,
       "short_name": "T9",
