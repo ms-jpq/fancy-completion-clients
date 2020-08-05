@@ -3,7 +3,7 @@ local fn = vim.fn
 
 local init = function (location)
 
-  local postfix = "/plugin/fancy-completion-clients.vim"
+  local postfix = "/plugin/nap.vim"
   local idx = string.len(location) - string.len(postfix)
   local base_path = string.sub(location, 1, idx)
   local config = base_path .. "/config/config.json"
