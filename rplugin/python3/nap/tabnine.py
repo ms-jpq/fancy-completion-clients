@@ -28,8 +28,8 @@ from typing import (
 from pynvim import Nvim
 from pynvim.api.buffer import Buffer
 
-from .c_pkgs.c_nvim import call
-from .c_pkgs.c_types import Completion, Context, Seed, Source
+from .shared.nvim import call
+from .shared.types import Completion, Context, Seed, Source
 
 
 @dataclass(frozen=True)

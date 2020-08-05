@@ -2,16 +2,16 @@ from asyncio import Queue
 from dataclasses import asdict, dataclass
 from os import remove
 from os.path import exists, getmtime, join
-from typing import Any, AsyncIterator, Dict, Iterator, Sequence, Tuple
+from typing import Any, AsyncIterator, Dict, Iterator, Sequence
 
 from pynvim import Nvim
 
-from ..shared.consts import __artifacts__
-from ..shared.da import dump_json, load_json, slurp
-from ..shared.nvim import print
-from ..shared.parse import parse_common_affix
-from ..shared.sql import AConnection
-from ..shared.types import Completion, Context, Seed, Source
+from .shared.consts import __artifacts__
+from .shared.da import dump_json, load_json, slurp
+from .shared.nvim import print
+from .shared.parse import parse_common_affix
+from .shared.sql import AConnection
+from .shared.types import Completion, Context, Seed, Source
 
 NAME = "dictionary"
 
