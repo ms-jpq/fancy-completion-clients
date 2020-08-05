@@ -11,8 +11,10 @@ from asyncio.subprocess import DEVNULL, PIPE, Process
 from dataclasses import asdict, dataclass, field
 from itertools import chain
 from json import dumps, loads
-from os import linesep
-from shutil import which
+from os import linesep, listdir
+from os import name as os_name
+from os.path import exists, join
+from platform import system
 from typing import (
     Any,
     AsyncIterator,
@@ -28,8 +30,11 @@ from typing import (
 from pynvim import Nvim
 from pynvim.api.buffer import Buffer
 
+from .shared.consts import __artifacts__
 from .shared.nvim import call
 from .shared.types import Completion, Context, Seed, Source
+
+__exec_home__ = join(__artifacts__, "binaries")
 
 
 @dataclass(frozen=True)
@@ -49,7 +54,7 @@ class TabNineRequestL1:
 @dataclass(frozen=True)
 class TabNineRequest:
     request: TabNineRequestL1
-    version: str = "2.8.9"
+    version: str = "2.9.2"
 
 
 @dataclass(frozen=True)
@@ -70,14 +75,27 @@ class TabNineResponse:
     user_message: Sequence[str] = field(default_factory=tuple)
 
 
+SYS_MAP = {
+    "Darwin": "apple-darwin",
+    "Linux": "unknown-linux-gnu",
+    "Windows": "pc-windows-gnu",
+}
+
+
+def parse_ver() -> Iterator[str]:
+    triple = f"x86_64-{SYS_MAP[system()]}"
+    exe_name = "Tabnine.exe" if os_name == "nt" else "Tabnine"
+    path = join(triple, exe_name)
+    for d in listdir(__exec_home__):
+        full_path = join(d, path)
+        if exists(full_path):
+            yield full_path
+
+
 async def init_lua(nvim: Nvim) -> Dict[str, int]:
     def cont() -> Dict[str, int]:
-        nvim.api.exec_lua(
-            "_nap_tabnine = require 'nap/tabnine'", ()
-        )
-        entry_kind = nvim.api.exec_lua(
-            "return _nap_tabnine.list_entry_kind()", ()
-        )
+        nvim.api.exec_lua("_nap_tabnine = require 'nap/tabnine'", ())
+        entry_kind = nvim.api.exec_lua("return _nap_tabnine.list_entry_kind()", ())
         return entry_kind
 
     return await call(nvim, cont)
@@ -105,8 +123,7 @@ def decode_tabnine(resp: Any) -> Optional[TabNineResponse]:
 def tabnine_subproc() -> Optional[
     Callable[[TabNineRequest], Awaitable[Optional[TabNineResponse]]]
 ]:
-
-    tab_nine_exe = "TabNine"
+    t9exe = next(parse_ver(), None)
     SEP = linesep.encode()
     proc, stdin, stdout = None, None, None
     task: Task = create_task(sleep(0))
@@ -117,7 +134,7 @@ def tabnine_subproc() -> Optional[
             pass
         else:
             proc = await create_subprocess_exec(
-                tab_nine_exe, stdin=PIPE, stdout=PIPE, stderr=DEVNULL
+                t9exe, stdin=PIPE, stdout=PIPE, stderr=DEVNULL
             )
 
     async def request(req: TabNineRequest) -> Any:
@@ -136,7 +153,7 @@ def tabnine_subproc() -> Optional[
         resp = loads(json)
         return decode_tabnine(resp)
 
-    if which(tab_nine_exe):
+    if t9exe:
         return request
     else:
         return None
