@@ -13,7 +13,7 @@ from .shared.nvim import print
 class Main:
     def __init__(self, nvim: Nvim):
         self.nvim = nvim
-        self.chan = ThreadPoolExecutor(max_workers=1)
+        self.chan = ThreadPoolExecutor()
 
     def _submit(self, co: Awaitable[None]) -> None:
         loop: AbstractEventLoop = self.nvim.loop
@@ -31,8 +31,8 @@ class Main:
     @command("NAPInstallSpellCheck")
     def inst_spellcheck(self) -> None:
         async def inst() -> None:
-            print("...")
+            await print(self.nvim, "...")
             await install()
-            print("done")
+            await print(self.nvim, "done")
 
         self._submit(inst)
