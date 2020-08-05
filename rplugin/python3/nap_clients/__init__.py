@@ -29,15 +29,6 @@ class Main:
 
         self.chan.submit(run, self.nvim)
 
-    @command("NAPInstallSpellCheck")
-    def inst_spellcheck(self) -> None:
-        async def inst() -> None:
-            await print(self.nvim, "⏳...⌛️")
-            await install_sqlite()
-            await print(self.nvim, "✅")
-
-        self._submit(inst())
-
     @command("NAPInstallTabNine")
     def inst_tabnine(self) -> None:
         async def inst() -> None:
