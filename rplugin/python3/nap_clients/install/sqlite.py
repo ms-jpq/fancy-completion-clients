@@ -12,16 +12,15 @@ https://www.sqlite.org/src/zip/sqlite.zip?r=release\
 
 async def install() -> None:
     with TemporaryDirectory() as temp:
-        base = temp
         name = "sqlite.zip"
-        await download(ADDR, dest=base, name=name)
-        zip_name = join(base, "sqlite.zip")
+        await download(ADDR, dest=temp, name=name)
+        zip_name = join(temp, "sqlite.zip")
         unzip(zip_name)
         spellfix = join("sqlite", "ext", "misc", "spellfix.c")
         target = "spellfix.so"
         await call(
-            "gcc", "-shared", "-fPIC", "-Wall", spellfix, "-o", target, cwd=base,
+            "gcc", "-shared", "-fPIC", "-Wall", spellfix, "-o", target, cwd=temp,
         )
-        compiled = join(base, target)
+        compiled = join(temp, target)
         home = join(__artifacts__, target)
         move(src=compiled, dst=home)

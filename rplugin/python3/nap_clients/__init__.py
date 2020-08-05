@@ -5,7 +5,8 @@ from typing import Awaitable
 
 from pynvim import Nvim, command, plugin
 
-from .install.sqlite import install
+from .install.sqlite import install as install_sqlite
+from .install.tabnine import install as install_tabnine
 from .shared.nvim import print
 
 
@@ -32,7 +33,16 @@ class Main:
     def inst_spellcheck(self) -> None:
         async def inst() -> None:
             await print(self.nvim, "...")
-            await install()
+            await install_sqlite()
+            await print(self.nvim, "done")
+
+        self._submit(inst())
+
+    @command("NAPInstallTabNine")
+    def inst_tabnine(self) -> None:
+        async def inst() -> None:
+            await print(self.nvim, "...")
+            await install_tabnine()
             await print(self.nvim, "done")
 
         self._submit(inst())

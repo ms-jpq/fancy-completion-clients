@@ -1,4 +1,4 @@
-from asyncio import create_subprocess_exec
+from asyncio import create_subprocess_exec, get_running_loop
 from asyncio.subprocess import PIPE
 from dataclasses import dataclass
 from json import dump, load
@@ -6,6 +6,7 @@ from os import makedirs
 from os.path import dirname, exists
 from shutil import which
 from typing import Any, Optional, cast
+from urllib.request import urlopen
 from zipfile import ZipFile
 
 
@@ -59,6 +60,16 @@ async def download(uri: str, dest: str, name: str) -> None:
             raise DownloadError(ret.err)
     else:
         raise DownloadError("neither curl or wget found in PATH")
+
+
+async def fetch(uri: str) -> str:
+    loop = get_running_loop()
+
+    def cont() -> str:
+        with urlopen(uri) as fd:
+            return fd.read().decode()
+
+    return await loop.run_in_executor(None, cont)
 
 
 def unzip(path: str) -> None:
