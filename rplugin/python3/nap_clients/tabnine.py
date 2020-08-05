@@ -134,7 +134,7 @@ def tabnine_subproc() -> Optional[
             pass
         else:
             proc = await create_subprocess_exec(
-                t9exe, stdin=PIPE, stdout=PIPE, stderr=DEVNULL
+                cast(str, t9exe), stdin=PIPE, stdout=PIPE, stderr=DEVNULL
             )
 
     async def request(req: TabNineRequest) -> Any:
