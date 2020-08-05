@@ -1,4 +1,5 @@
-from os.path import join
+from os import remove
+from os.path import exists, join
 from shutil import move
 from tempfile import TemporaryDirectory
 
@@ -22,5 +23,7 @@ async def install() -> None:
             "gcc", "-shared", "-fPIC", "-Wall", spellfix, "-o", target, cwd=temp,
         )
         compiled = join(temp, target)
-        home = join(__artifacts__, target)
-        move(src=compiled, dst=home)
+        dst = join(__artifacts__, target)
+        if exists(dst):
+            remove(dst)
+        move(src=compiled, dst=dst)

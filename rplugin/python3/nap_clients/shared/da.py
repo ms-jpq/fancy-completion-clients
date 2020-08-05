@@ -50,14 +50,14 @@ class DownloadError(Exception):
 
 async def download(uri: str, dest: str, name: str) -> None:
     makedirs(dest, exist_ok=True)
-    if which("wget"):
-        ret = await call("wget", "-O", name, "--", uri, cwd=dest)
-        if ret.code:
-            raise DownloadError(ret.err)
-    elif which("curl"):
+    if which("curl"):
         ret = await call("curl", "--location", "--output", name, "--", uri, cwd=dest)
         if ret.code:
             raise DownloadError(ret.err)
+    # elif which("wget"):
+    #     ret = await call("wget", "-O", name, "--", uri, cwd=dest)
+    #     if ret.code:
+    #         raise DownloadError(ret.err)
     else:
         raise DownloadError("neither curl or wget found in PATH")
 

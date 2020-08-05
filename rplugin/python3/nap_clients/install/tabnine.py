@@ -1,6 +1,7 @@
+from asyncio import gather
 from os import chmod, stat
-from os.path import join
-from shutil import move
+from os.path import exists, join
+from shutil import move, rmtree
 from stat import S_IEXEC
 from tempfile import TemporaryDirectory
 
@@ -8,7 +9,7 @@ from ..shared.consts import __artifacts__
 from ..shared.da import download, fetch
 
 ADDR = """\
-https://update.tabnine.com/\
+https://update.tabnine.com\
 """
 ARCH = (
     "i686-apple-darwin",
@@ -20,17 +21,26 @@ ARCH = (
 )
 
 
+async def inst_arch(version: str, arch: str, root: str) -> None:
+    path = join(version, arch)
+    exe_name = "TabNine.exe" if "windows" in arch else "TabNine"
+    uri = join(ADDR, path, exe_name)
+    parent = join(root, path)
+    fullname = join(parent, exe_name)
+    await download(uri, dest=parent, name=exe_name)
+    st = stat(fullname)
+    chmod(fullname, st.st_mode | S_IEXEC)
+
+
 async def install() -> None:
     with TemporaryDirectory() as temp:
+        temp = "./temp"
         bin_home = "binaries"
         root = join(temp, bin_home)
-        version = await fetch(ADDR + "version")
-        for arch in ARCH:
-            path = join(version, arch)
-            exe_name = "TabNine.exe" if "windows" in arch else "TabNine"
-            uri = ADDR + path
-            await download(uri, dest=root, name=exe_name)
-            fullname = join(root, exe_name)
-            st = stat(fullname)
-            chmod(fullname, st.st_mode | S_IEXEC)
-        move(src=root, dst=join(__artifacts__, bin_home))
+        ver = await fetch(join(ADDR, "version"))
+        version = ver.strip()
+        await gather(*(inst_arch(version, arch=arch, root=root) for arch in ARCH))
+        dst = join(__artifacts__, bin_home)
+        if exists(dst):
+            rmtree(dst)
+        move(src=root, dst=dst)
