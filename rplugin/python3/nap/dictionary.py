@@ -2,7 +2,7 @@ from asyncio import Queue
 from dataclasses import asdict, dataclass
 from os import remove
 from os.path import exists, getmtime, join
-from typing import Any, AsyncIterator, Dict, Iterator, Sequence
+from typing import Any, AsyncIterator, Dict, Iterator, Sequence, cast
 
 from pynvim import Nvim
 
@@ -54,7 +54,7 @@ def db_ver(config: Config) -> bool:
     if not db_exists:
         return True
     elif type(json) is dict:
-        disk_conf = DBConfig(**json)
+        disk_conf = DBConfig(**cast(Dict[str, Any], json))
         if disk_conf != conf:
             if db_exists:
                 remove(__db__)
