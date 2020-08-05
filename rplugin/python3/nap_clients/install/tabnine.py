@@ -12,12 +12,9 @@ ADDR = """\
 https://update.tabnine.com\
 """
 ARCH = (
-    "i686-apple-darwin",
     "x86_64-apple-darwin",
     "x86_64-unknown-linux-gnu",
     "x86_64-pc-windows-gnu",
-    "i686-unknown-linux-gnu",
-    "i686-pc-windows-gnu",
 )
 
 
