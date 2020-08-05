@@ -9,11 +9,8 @@ from pynvim import Nvim
 from .shared.consts import __artifacts__
 from .shared.da import dump_json, load_json, slurp
 from .shared.nvim import print
-from .shared.parse import parse_common_affix
 from .shared.sql import AConnection
 from .shared.types import Completion, Context, Seed, Source
-
-NAME = "dictionary"
 
 __info__ = join(__artifacts__, "dictionary_info.json")
 __db__ = join(__artifacts__, "dictionary.db")
@@ -45,26 +42,32 @@ def read_config(config: Dict[str, Any]) -> Config:
 
 
 def db_ver(config: Config) -> bool:
+    db_exists = exists(__db__)
     source_age = {
-        source.path: round(getmtime(source.path)) for source in config.sources
+        source.path: round(getmtime(source.path))
+        for source in config.sources
+        if exists(source.path)
     }
     conf = DBConfig(version=__db_ver__, source_age=source_age)
     json = load_json(__info__)
     dump_json(__info__, asdict(conf))
-    if type(json) is dict:
+    if not db_exists:
+        return True
+    elif type(json) is dict:
         disk_conf = DBConfig(**json)
         if disk_conf != conf:
-            if exists(__db__):
+            if db_exists:
                 remove(__db__)
-                return True
+            return True
     return False
 
 
 def read_sources(sources: Sequence[DictionarySpec]) -> Iterator[str]:
     for spec in sources:
-        data = slurp(spec.path)
-        for word in data.split(spec.sep):
-            yield word
+        if exists(spec.path):
+            data = slurp(spec.path)
+            for word in data.split(spec.sep):
+                yield word
 
 
 _INIT = """
@@ -135,14 +138,11 @@ async def main(nvim: Nvim, chan: Queue, seed: Seed) -> Source:
     async def source(context: Context) -> AsyncIterator[Completion]:
         cword = parse_cword(context.alnums_before)
         async for word in query(conn, cword=cword, min_matches=min_matches):
-            _, old_suffix = parse_common_affix(
-                context, match_normalized=cword, use_line=False,
-            )
             yield Completion(
                 position=context.position,
                 old_prefix=cword,
                 new_prefix=word,
-                old_suffix=old_suffix,
+                old_suffix="",
                 new_suffix="",
             )
 
