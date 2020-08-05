@@ -1,22 +1,5 @@
 {
   "sources": {
-    "dictionary": {
-      "config": {
-        "min_match": 3,
-        "sources": [
-          {
-            "path": "/usr/share/dict/words",
-            "sep": "\n"
-          }
-        ]
-      },
-      "enabled": true,
-      "limit": 3,
-      "main": "nap-clients/rplugin/python3/nap_clients/dictionary.py",
-      "rank": 50,
-      "short_name": "D",
-      "timeout": 100
-    },
     "tabnine": {
       "config": {},
       "enabled": true,
