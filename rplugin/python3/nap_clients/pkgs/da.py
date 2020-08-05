@@ -3,7 +3,7 @@ from asyncio.subprocess import PIPE
 from dataclasses import dataclass
 from json import dump, load
 from os import makedirs
-from os.path import dirname, exists
+from os.path import dirname, exists, join
 from shutil import which
 from typing import Any, Optional, cast
 from urllib.request import urlopen
@@ -59,7 +59,15 @@ async def download(uri: str, dest: str, name: str) -> None:
         if ret.code:
             raise DownloadError(ret.err)
     else:
-        raise DownloadError("neither curl or wget found in PATH")
+        loop = get_running_loop()
+
+        def cont() -> None:
+            with urlopen(uri) as fd:
+                data = fd.read()
+                with open(join(dest, name), "wb") as f:
+                    f.write(data)
+
+        return await loop.run_in_executor(None, cont)
 
 
 async def fetch(uri: str) -> str:
