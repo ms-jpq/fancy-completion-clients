@@ -31,7 +31,7 @@ from pynvim import Nvim
 from pynvim.api.buffer import Buffer
 
 from .pkgs.consts import __artifacts__
-from .pkgs.nvim import call, print
+from .pkgs.nvim import call
 from .pkgs.types import Completion, Context, Seed, Source
 
 __exec_home__ = join(__artifacts__, "binaries")
@@ -84,10 +84,10 @@ SYS_MAP = {
 
 def parse_ver() -> Iterator[str]:
     triple = f"x86_64-{SYS_MAP[system()]}"
-    exe_name = "Tabnine.exe" if os_name == "nt" else "Tabnine"
+    exe_name = "TabNine.exe" if os_name == "nt" else "TabNine"
     path = join(triple, exe_name)
     for d in listdir(__exec_home__):
-        full_path = join(d, path)
+        full_path = join(__exec_home__, d, path)
         if exists(full_path):
             yield full_path
 
@@ -204,7 +204,6 @@ def parse_rows(
 
 
 async def main(nvim: Nvim, chan: Queue, seed: Seed) -> Source:
-    await print(nvim, tuple(parse_ver()))
     tabnine_inst = tabnine_subproc()
     entry_kind = await init_lua(nvim)
     entry_kind_lookup = {v: k for k, v in entry_kind.items()}
