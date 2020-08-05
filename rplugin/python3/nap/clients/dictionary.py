@@ -34,7 +34,7 @@ class Config:
 
 @dataclass(frozen=True)
 class DBConfig:
-    version: Tuple[int, int]
+    version: Sequence[int]
     source_age: Dict[str, int]
 
 
