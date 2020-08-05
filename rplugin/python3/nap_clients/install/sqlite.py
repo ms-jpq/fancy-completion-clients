@@ -3,8 +3,8 @@ from os.path import exists, join
 from shutil import move
 from tempfile import TemporaryDirectory
 
-from ..shared.consts import __artifacts__
-from ..shared.da import call, download, unzip
+from ..pkgs.consts import __artifacts__
+from ..pkgs.da import call, download, unzip
 
 ADDR = """\
 https://www.sqlite.org/src/zip/sqlite.zip?r=release\

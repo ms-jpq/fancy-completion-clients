@@ -19,13 +19,13 @@
     },
     "tabnine": {
       "config": {},
-      "enabled": false,
+      "enabled": true,
       "limit": 5,
       "main": "nap-clients/rplugin/python3/nap_clients/tabnine.py",
       "priority": 5,
       "rank": 100,
       "short_name": "T9",
-      "timeout": 1000
+      "timeout": 500
     }
   }
 }

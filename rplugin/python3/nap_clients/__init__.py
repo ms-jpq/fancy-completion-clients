@@ -7,7 +7,7 @@ from pynvim import Nvim, command, plugin
 
 from .install.sqlite import install as install_sqlite
 from .install.tabnine import install as install_tabnine
-from .shared.nvim import print
+from .pkgs.nvim import print
 
 
 @plugin

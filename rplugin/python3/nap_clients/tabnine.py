@@ -30,9 +30,9 @@ from typing import (
 from pynvim import Nvim
 from pynvim.api.buffer import Buffer
 
-from .shared.consts import __artifacts__
-from .shared.nvim import call
-from .shared.types import Completion, Context, Seed, Source
+from .pkgs.consts import __artifacts__
+from .pkgs.nvim import call, print
+from .pkgs.types import Completion, Context, Seed, Source
 
 __exec_home__ = join(__artifacts__, "binaries")
 
@@ -204,6 +204,7 @@ def parse_rows(
 
 
 async def main(nvim: Nvim, chan: Queue, seed: Seed) -> Source:
+    await print(nvim, tuple(parse_ver()))
     tabnine_inst = tabnine_subproc()
     entry_kind = await init_lua(nvim)
     entry_kind_lookup = {v: k for k, v in entry_kind.items()}

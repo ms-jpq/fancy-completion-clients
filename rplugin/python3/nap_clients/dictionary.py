@@ -6,11 +6,11 @@ from typing import Any, AsyncIterator, Dict, Iterator, Sequence, cast
 
 from pynvim import Nvim
 
-from .shared.consts import __artifacts__
-from .shared.da import dump_json, load_json, slurp
-from .shared.nvim import print
-from .shared.sql import AConnection
-from .shared.types import Completion, Context, Seed, Source
+from .pkgs.consts import __artifacts__
+from .pkgs.da import dump_json, load_json, slurp
+from .pkgs.nvim import print
+from .pkgs.sql import AConnection
+from .pkgs.types import Completion, Context, Seed, Source
 
 __info__ = join(__artifacts__, "dictionary_info.json")
 __db__ = join(__artifacts__, "dictionary.db")
