@@ -86,7 +86,8 @@ def parse_ver() -> Iterator[str]:
     triple = f"x86_64-{SYS_MAP[system()]}"
     exe_name = "TabNine.exe" if os_name == "nt" else "TabNine"
     path = join(triple, exe_name)
-    for d in listdir(__exec_home__):
+    lookup = listdir(__exec_home__) if exists(__exec_home__) else ()
+    for d in lookup:
         full_path = join(__exec_home__, d, path)
         if exists(full_path):
             yield full_path
