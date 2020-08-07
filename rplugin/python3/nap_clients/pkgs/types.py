@@ -1,5 +1,6 @@
 from asyncio import Queue
 from dataclasses import dataclass, field
+from logging import Logger
 from typing import (
     Any,
     AsyncIterator,
@@ -16,9 +17,15 @@ from pynvim import Nvim
 
 @dataclass(frozen=True)
 class MatchOptions:
-    min_match: int
     transpose_band: int
     unifying_chars: Set[str]
+
+
+@dataclass(frozen=True)
+class Comm:
+    nvim: Nvim
+    chan: Queue
+    log: Logger
 
 
 @dataclass(frozen=True)
@@ -95,11 +102,12 @@ class Completion:
 
 
 Source = Callable[[Context], AsyncIterator[Completion]]
-Factory = Callable[[Nvim, Queue, Seed], Awaitable[Source]]
+Factory = Callable[[Comm, Seed], Awaitable[Source]]
 
 
 @dataclass(frozen=True)
 class SnippetSeed:
+    match: MatchOptions
     config: Dict[str, Any]
 
 
@@ -110,4 +118,4 @@ class SnippetContext:
 
 
 SnippetEngine = Callable[[SnippetContext], Awaitable[None]]
-SnippetEngineFactory = Callable[[Nvim, SnippetSeed], Awaitable[SnippetEngine]]
+SnippetEngineFactory = Callable[[Comm, SnippetSeed], Awaitable[SnippetEngine]]
