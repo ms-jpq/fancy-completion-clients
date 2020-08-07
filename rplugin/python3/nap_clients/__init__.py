@@ -5,7 +5,6 @@ from typing import Awaitable
 
 from pynvim import Nvim, command, plugin
 
-from .install.sqlite import install as install_sqlite
 from .install.tabnine import install as install_tabnine
 from .pkgs.nvim import print
 
