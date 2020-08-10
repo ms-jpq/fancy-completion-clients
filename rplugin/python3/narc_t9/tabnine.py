@@ -1,4 +1,11 @@
-from asyncio import Queue, StreamReader, StreamWriter, create_subprocess_exec, shield
+from asyncio import (
+    Queue,
+    StreamReader,
+    StreamWriter,
+    create_subprocess_exec,
+    shield,
+    sleep,
+)
 from asyncio.subprocess import DEVNULL, PIPE, Process
 from dataclasses import asdict, dataclass, field
 from itertools import chain
@@ -145,6 +152,7 @@ def tabnine_subproc(
             stdout = cast(StreamReader, proc.stdout)
             stdin.write(dumps(asdict(req)).encode())
             stdin.write(SEP)
+            await sleep(0)
             data = await stdout.readuntil(SEP)
             json = data.decode()
             resp = loads(json)
