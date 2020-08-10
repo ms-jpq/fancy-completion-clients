@@ -212,7 +212,7 @@ def parse_rows(
 
 
 async def main(comm: Comm, seed: Seed) -> Source:
-    nvim = comm.nvim
+    nvim, log = comm.nvim, comm.log
     max_results = seed.limit * 2
     tabnine_inst = tabnine_subproc()
     entry_kind = await init_lua(nvim)
@@ -230,6 +230,9 @@ async def main(comm: Comm, seed: Seed) -> Source:
                 for row in parse_rows(
                     resp, context=context, entry_kind_lookup=entry_kind_lookup
                 ):
+                    if row.old_prefix != context.alnums_before:
+                        msg = f"{context.alnums_before}, {row.old_prefix}"
+                        log.debug("%s", msg)
                     yield row
 
     return source
