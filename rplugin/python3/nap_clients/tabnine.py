@@ -38,6 +38,7 @@ __exec_home__ = join(__artifacts__, "binaries")
 
 @dataclass(frozen=True)
 class TabNineRequestL2:
+    max_num_results: int
     before: str
     after: str
     filename: str
@@ -168,7 +169,9 @@ async def buf_lines(nvim: Nvim) -> Sequence[str]:
     return await call(nvim, cont)
 
 
-async def encode_tabnine_request(nvim: Nvim, context: Context) -> TabNineRequest:
+async def encode_tabnine_request(
+    nvim: Nvim, context: Context, max_results: int
+) -> TabNineRequest:
     row = context.position.row
     lines = await buf_lines(nvim)
     lines_before = lines[:row]
@@ -176,7 +179,12 @@ async def encode_tabnine_request(nvim: Nvim, context: Context) -> TabNineRequest
     before = linesep.join(chain(lines_before, (context.line_before,)))
     after = linesep.join(chain((context.line_after,), lines_after))
 
-    l2 = TabNineRequestL2(before=before, after=after, filename=context.filename)
+    l2 = TabNineRequestL2(
+        max_num_results=max_results,
+        before=before,
+        after=after,
+        filename=context.filename,
+    )
     l1 = TabNineRequestL1(Autocomplete=l2)
     req = TabNineRequest(request=l1)
     return req
@@ -205,6 +213,7 @@ def parse_rows(
 
 async def main(comm: Comm, seed: Seed) -> Source:
     nvim = comm.nvim
+    max_results = seed.limit * 2
     tabnine_inst = tabnine_subproc()
     entry_kind = await init_lua(nvim)
     entry_kind_lookup = {v: k for k, v in entry_kind.items()}
@@ -213,7 +222,9 @@ async def main(comm: Comm, seed: Seed) -> Source:
         if not tabnine_inst:
             pass
         else:
-            req = await encode_tabnine_request(nvim, context=context)
+            req = await encode_tabnine_request(
+                nvim, context=context, max_results=max_results
+            )
             resp = await tabnine_inst(req)
             if resp:
                 for row in parse_rows(
