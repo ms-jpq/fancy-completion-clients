@@ -29,9 +29,9 @@ from typing import (
 from pynvim import Nvim
 from pynvim.api.buffer import Buffer
 
-from .pkgs.consts import __artifacts__
-from .pkgs.nvim import call
-from .pkgs.types import Comm, Completion, Context, Seed, Source
+from .consts import __artifacts__
+from .nvim import call
+from .types import Comm, Completion, Context, Seed, Source
 
 __exec_home__ = join(__artifacts__, "binaries")
 

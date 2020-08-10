@@ -5,8 +5,8 @@ from typing import Awaitable
 
 from pynvim import Nvim, command, plugin
 
-from .install.tabnine import install as install_tabnine
-from .pkgs.nvim import print
+from .install import install
+from .nvim import print
 
 
 @plugin
@@ -32,7 +32,7 @@ class Main:
     def inst_tabnine(self) -> None:
         async def inst() -> None:
             await print(self.nvim, "⏳...⌛️")
-            await install_tabnine()
+            await install()
             await print(self.nvim, "✅")
 
         self._submit(inst())

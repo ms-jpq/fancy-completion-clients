@@ -5,8 +5,8 @@ from shutil import move, rmtree
 from stat import S_IEXEC
 from tempfile import TemporaryDirectory
 
-from ..pkgs.consts import __artifacts__
-from ..pkgs.da import download, fetch
+from .consts import __artifacts__
+from .da import download, fetch
 
 ADDR = """\
 https://update.tabnine.com\
