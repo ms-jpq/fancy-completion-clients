@@ -1,18 +1,9 @@
-from asyncio import (
-    Lock,
-    Queue,
-    StreamReader,
-    StreamWriter,
-    Task,
-    create_subprocess_exec,
-    create_task,
-    shield,
-    sleep,
-)
+from asyncio import Queue, StreamReader, StreamWriter, create_subprocess_exec, shield
 from asyncio.subprocess import DEVNULL, PIPE, Process
 from dataclasses import asdict, dataclass, field
 from itertools import chain
 from json import dumps, loads
+from logging import Logger
 from os import linesep, listdir
 from os import name as os_name
 from os.path import exists, join
@@ -127,9 +118,9 @@ def decode_tabnine(resp: Any) -> Optional[TabNineResponse]:
         return None
 
 
-def tabnine_subproc() -> Optional[
-    Callable[[TabNineRequest], Awaitable[Optional[TabNineResponse]]]
-]:
+def tabnine_subproc(
+    log: Logger,
+) -> Optional[Callable[[TabNineRequest], Awaitable[Optional[TabNineResponse]]]]:
     t9exe = next(parse_ver(), None)
     chan: Queue = Queue(1)
 
@@ -142,6 +133,7 @@ def tabnine_subproc() -> Optional[
                 proc = await create_subprocess_exec(
                     cast(str, t9exe), stdin=PIPE, stdout=PIPE, stderr=DEVNULL
                 )
+                log.info("%s", "created tabnine subproc")
             stdin = cast(StreamWriter, proc.stdin)
             stdout = cast(StreamReader, proc.stdout)
             req = await chan.get()
@@ -217,7 +209,7 @@ def parse_rows(
 async def main(comm: Comm, seed: Seed) -> Source:
     nvim, log = comm.nvim, comm.log
     max_results = round(seed.limit * 2)
-    tabnine_inst = tabnine_subproc()
+    tabnine_inst = tabnine_subproc(log)
     entry_kind = await init_lua(nvim)
     entry_kind_lookup = {v: k for k, v in entry_kind.items()}
 
