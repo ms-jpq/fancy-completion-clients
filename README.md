@@ -1,6 +1,6 @@
 # NARC T9
 
-Tabnine Clients for [Nvim Async Reflex Complete](https://github.com/ms-jpq/narc)
+Tabnine Clients for [Nvim Async Reactive Complete](https://github.com/ms-jpq/narc)
 
 ## Install
 
