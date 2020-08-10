@@ -160,9 +160,12 @@ def tabnine_subproc(
             await reply_ch.put(decoded)
 
     async def request(req: TabNineRequest) -> Optional[TabNineResponse]:
-        await send_ch.put(req)
-        resp = await reply_ch.get()
-        return resp
+        async def cont() -> Optional[TabNineResponse]:
+            await send_ch.put(req)
+            resp = await reply_ch.get()
+            return resp
+
+        return await shield(cont())
 
     if t9exe:
         return ooda, request
@@ -240,7 +243,7 @@ async def main(comm: Comm, seed: Seed) -> Source:
             req = await encode_tabnine_request(
                 nvim, context=context, max_results=max_results
             )
-            resp = await shield(tabnine_inst(req))
+            resp = await tabnine_inst(req)
             if resp:
                 for row in parse_rows(
                     resp, context=context, entry_kind_lookup=entry_kind_lookup
