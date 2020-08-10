@@ -218,6 +218,10 @@ async def main(comm: Comm, seed: Seed) -> Source:
     entry_kind = await init_lua(nvim)
     entry_kind_lookup = {v: k for k, v in entry_kind.items()}
 
+    if not tabnine_inst:
+        msg = "no tabnine executable found"
+        log.warn("%s", msg)
+
     async def source(context: Context) -> AsyncIterator[Completion]:
         if not tabnine_inst:
             pass
@@ -230,9 +234,6 @@ async def main(comm: Comm, seed: Seed) -> Source:
                 for row in parse_rows(
                     resp, context=context, entry_kind_lookup=entry_kind_lookup
                 ):
-                    if row.old_prefix != context.alnums_before:
-                        msg = f"{context.alnums_before}, {row.old_prefix}"
-                        log.debug("%s", msg)
                     yield row
 
     return source
