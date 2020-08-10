@@ -17,6 +17,7 @@ from typing import (
     Iterator,
     Optional,
     Sequence,
+    Tuple,
     cast,
 )
 
@@ -24,8 +25,7 @@ from pynvim import Nvim
 from pynvim.api.buffer import Buffer
 
 from .consts import __artifacts__
-from .da import anext
-from .nvim import call
+from .nvim import call, run_forever
 from .types import Comm, Completion, Context, Seed, Source
 
 __exec_home__ = join(__artifacts__, "binaries")
@@ -120,13 +120,20 @@ def decode_tabnine(resp: Any) -> Optional[TabNineResponse]:
 
 def tabnine_subproc(
     log: Logger,
-) -> Optional[Callable[[TabNineRequest], Awaitable[Optional[TabNineResponse]]]]:
+) -> Optional[
+    Tuple[
+        Callable[[], Awaitable[None]],
+        Callable[[TabNineRequest], Awaitable[Optional[TabNineResponse]]],
+    ]
+]:
     t9exe = next(parse_ver(), None)
-    chan: Queue = Queue(1)
+    send_ch: Queue = Queue(1)
+    reply_ch: Queue = Queue(1)
 
-    async def ooda() -> AsyncIterator[Optional[TabNineResponse]]:
+    async def ooda() -> None:
         proc: Optional[Process] = None
         while True:
+            req = await send_ch.get()
             if proc and proc.returncode is None:
                 pass
             else:
@@ -136,21 +143,21 @@ def tabnine_subproc(
                 log.info("%s", "created tabnine subproc")
             stdin = cast(StreamWriter, proc.stdin)
             stdout = cast(StreamReader, proc.stdout)
-            req = await chan.get()
             stdin.write(dumps(asdict(req)).encode())
             stdin.write(SEP)
             data = await stdout.readuntil(SEP)
             json = data.decode()
             resp = loads(json)
-            yield decode_tabnine(resp)
+            decoded = decode_tabnine(resp)
+            await reply_ch.put(decoded)
 
     async def request(req: TabNineRequest) -> Optional[TabNineResponse]:
-        await chan.put(req)
-        resp = await anext(ooda())
+        await send_ch.put(req)
+        resp = await reply_ch.get()
         return resp
 
     if t9exe:
-        return request
+        return ooda, request
     else:
         return None
 
@@ -209,7 +216,8 @@ def parse_rows(
 async def main(comm: Comm, seed: Seed) -> Source:
     nvim, log = comm.nvim, comm.log
     max_results = round(seed.limit * 2)
-    tabnine_inst = tabnine_subproc(log)
+    t9_sub = tabnine_subproc(log)
+    ooda, tabnine_inst = t9_sub if t9_sub else (None, None)
     entry_kind = await init_lua(nvim)
     entry_kind_lookup = {v: k for k, v in entry_kind.items()}
 
@@ -230,5 +238,8 @@ async def main(comm: Comm, seed: Seed) -> Source:
                     resp, context=context, entry_kind_lookup=entry_kind_lookup
                 ):
                     yield row
+
+    if ooda:
+        run_forever(nvim, log=log, thing=ooda)
 
     return source

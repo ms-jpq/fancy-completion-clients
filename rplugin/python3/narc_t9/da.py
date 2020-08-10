@@ -5,18 +5,9 @@ from json import dump, load
 from os import makedirs
 from os.path import dirname, exists, join
 from shutil import which
-from typing import Any, AsyncIterator, Optional, TypeVar, cast
+from typing import Any, Optional, cast
 from urllib.request import urlopen
 from zipfile import ZipFile
-
-T = TypeVar("T")
-
-
-async def anext(aiter: AsyncIterator[T], default: Optional[T] = None) -> Optional[T]:
-    try:
-        return await aiter.__anext__()
-    except StopAsyncIteration:
-        return default
 
 
 def slurp(path: str) -> str:
