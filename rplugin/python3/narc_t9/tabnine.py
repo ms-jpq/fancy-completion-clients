@@ -1,4 +1,14 @@
-from asyncio import StreamReader, StreamWriter, create_subprocess_exec, shield
+from asyncio import (
+    Lock,
+    Queue,
+    StreamReader,
+    StreamWriter,
+    Task,
+    create_subprocess_exec,
+    create_task,
+    shield,
+    sleep,
+)
 from asyncio.subprocess import DEVNULL, PIPE, Process
 from dataclasses import asdict, dataclass, field
 from itertools import chain
@@ -23,10 +33,13 @@ from pynvim import Nvim
 from pynvim.api.buffer import Buffer
 
 from .consts import __artifacts__
+from .da import anext
 from .nvim import call
 from .types import Comm, Completion, Context, Seed, Source
 
 __exec_home__ = join(__artifacts__, "binaries")
+
+SEP = linesep.encode()
 
 
 @dataclass(frozen=True)
@@ -118,31 +131,31 @@ def tabnine_subproc() -> Optional[
     Callable[[TabNineRequest], Awaitable[Optional[TabNineResponse]]]
 ]:
     t9exe = next(parse_ver(), None)
-    SEP = linesep.encode()
-    proc, stdin, stdout = None, None, None
+    chan: Queue = Queue(1)
 
-    async def init() -> None:
-        nonlocal proc, stdin, stdout
-        if proc and proc.returncode is None:  # type: ignore
-            pass
-        else:
-            proc = await create_subprocess_exec(
-                cast(str, t9exe), stdin=PIPE, stdout=PIPE, stderr=DEVNULL
-            )
+    async def ooda() -> AsyncIterator[Optional[TabNineResponse]]:
+        proc: Optional[Process] = None
+        while True:
+            if proc and proc.returncode is None:
+                pass
+            else:
+                proc = await create_subprocess_exec(
+                    cast(str, t9exe), stdin=PIPE, stdout=PIPE, stderr=DEVNULL
+                )
+            stdin = cast(StreamWriter, proc.stdin)
+            stdout = cast(StreamReader, proc.stdout)
+            req = await chan.get()
+            stdin.write(dumps(asdict(req)).encode())
+            stdin.write(SEP)
+            data = await stdout.readuntil(SEP)
+            json = data.decode()
+            resp = loads(json)
+            yield decode_tabnine(resp)
 
-    async def request(req: TabNineRequest) -> Any:
-        await init()
-        p = cast(Process, proc)
-        stdin = cast(StreamWriter, p.stdin)
-        stdout = cast(StreamReader, p.stdout)
-
-        stdin.write(dumps(asdict(req)).encode())
-        stdin.write(SEP)
-        task = shield(stdout.readuntil(SEP))
-        data = await task
-        json = data.decode()
-        resp = loads(json)
-        return decode_tabnine(resp)
+    async def request(req: TabNineRequest) -> Optional[TabNineResponse]:
+        await chan.put(req)
+        resp = await anext(ooda())
+        return resp
 
     if t9exe:
         return request
@@ -219,7 +232,7 @@ async def main(comm: Comm, seed: Seed) -> Source:
             req = await encode_tabnine_request(
                 nvim, context=context, max_results=max_results
             )
-            resp = await tabnine_inst(req)
+            resp = await shield(tabnine_inst(req))
             if resp:
                 for row in parse_rows(
                     resp, context=context, entry_kind_lookup=entry_kind_lookup
