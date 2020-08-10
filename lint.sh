@@ -7,8 +7,7 @@ set -o pipefail
 cd "$(dirname "$0")" || exit 1
 
 FILES=(
-  ./rplugin/python3/nap_clients/*.py
-  ./rplugin/python3/nap_clients/**/*.py
+  ./rplugin/python3/nap_t9/*.py
   )
 
 mypy --ignore-missing-imports -- "${FILES[@]}"

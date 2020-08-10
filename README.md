@@ -1,21 +1,15 @@
-# Fuzzy Completion Clients
+# NAP T9
 
-Additional Clients for [Fancy Completion](https://github.com/ms-jpq/fancy-completion)
+Tabnine Clients for [Neovim Async comPletion](https://github.com/ms-jpq/nap)
 
 ## Install
 
-Install [`Fancy Complete`](https://github.com/ms-jpq/fancy-completion) first, then:
+Install [`Fancy Complete`](https://github.com/ms-jpq/nap) first, then:
 
 ```VimL
-Plug 'ms-jpq/fancy-completion-clients', {'branch': 'nvim', 'do': ':UpdateRemotePlugins'}
+Plug 'ms-jpq/nap-t9', {'branch': 'nap', 'do': ':UpdateRemotePlugins'}
 ```
 
-## Clients
+## Post Install
 
-Unlike the builtin sources, all of these clients are situational / require additional setup
-
-### [Tabnine](https://github.com/ms-jpq/fancy-completion-clients/blob/nvim/clients/tabnine.py)
-
-Additional setup:
-
-You need to download the TabNine executable for your platform.
+Run `:NAPInstallTabNine` to install Tabnine before the completion can be enabled.

@@ -213,7 +213,7 @@ def parse_rows(
 
 async def main(comm: Comm, seed: Seed) -> Source:
     nvim, log = comm.nvim, comm.log
-    max_results = seed.limit * 2
+    max_results = round(seed.limit * 2)
     tabnine_inst = tabnine_subproc()
     entry_kind = await init_lua(nvim)
     entry_kind_lookup = {v: k for k, v in entry_kind.items()}
