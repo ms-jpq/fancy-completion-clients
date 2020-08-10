@@ -1,15 +1,15 @@
-# NAP T9
+# NARC T9
 
-Tabnine Clients for [Neovim Async comPletion](https://github.com/ms-jpq/nap)
+Tabnine Clients for [Neovim Async comPletion](https://github.com/ms-jpq/narc)
 
 ## Install
 
-Install [Neovim Async comPletion](https://github.com/ms-jpq/nap) first, then:
+Install [Neovim Async comPletion](https://github.com/ms-jpq/narc) first, then:
 
 ```VimL
-Plug 'ms-jpq/nap-t9', {'branch': 'nap', 'do': ':UpdateRemotePlugins'}
+Plug 'ms-jpq/narc-t9', {'branch': 'narc', 'do': ':UpdateRemotePlugins'}
 ```
 
 ## Post Install
 
-Run `:NAPInstallTabNine` to install Tabnine before the completion can be enabled.
+Run `:NARCInstallTabNine` to install Tabnine before the completion can be enabled.

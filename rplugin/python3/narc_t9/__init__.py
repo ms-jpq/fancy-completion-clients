@@ -28,7 +28,7 @@ class Main:
 
         self.chan.submit(run, self.nvim)
 
-    @command("NAPInstallTabNine")
+    @command("NARCInstallTabNine")
     def inst_tabnine(self) -> None:
         async def inst() -> None:
             await print(self.nvim, "⏳...⌛️")

@@ -95,8 +95,8 @@ def parse_ver() -> Iterator[str]:
 
 async def init_lua(nvim: Nvim) -> Dict[str, int]:
     def cont() -> Dict[str, int]:
-        nvim.api.exec_lua("_nap_tabnine = require 'nap/tabnine'", ())
-        entry_kind = nvim.api.exec_lua("return _nap_tabnine.list_entry_kind()", ())
+        nvim.api.exec_lua("_narc_tabnine = require 'narc/tabnine'", ())
+        entry_kind = nvim.api.exec_lua("return _narc_tabnine.list_entry_kind()", ())
         return entry_kind
 
     return await call(nvim, cont)
