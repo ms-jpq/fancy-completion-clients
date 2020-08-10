@@ -4,7 +4,7 @@ Tabnine Clients for [Nvim Async Reactive Complete](https://github.com/ms-jpq/nar
 
 ## Install
 
-Install [Nvim Async Reflex Complete](https://github.com/ms-jpq/narc) first, then:
+Install [Nvim Async Reactive Complete](https://github.com/ms-jpq/narc) first, then:
 
 ```VimL
 Plug 'ms-jpq/narc-t9', {'branch': 'narc', 'do': ':UpdateRemotePlugins'}
