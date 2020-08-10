@@ -1,5 +1,4 @@
 from asyncio import (
-    Queue,
     StreamReader,
     StreamWriter,
     Task,
@@ -172,8 +171,8 @@ async def buf_lines(nvim: Nvim) -> Sequence[str]:
 async def encode_tabnine_request(nvim: Nvim, context: Context) -> TabNineRequest:
     row = context.position.row
     lines = await buf_lines(nvim)
-    lines_before = lines[: row - 1]
-    lines_after = lines[row - 1 :]
+    lines_before = lines[:row]
+    lines_after = lines[row:]
     before = linesep.join(chain(lines_before, (context.line_before,)))
     after = linesep.join(chain((context.line_after,), lines_after))
 
