@@ -31,7 +31,6 @@ async def inst_arch(version: str, arch: str, root: str) -> None:
 
 async def install() -> None:
     with TemporaryDirectory() as temp:
-        temp = "./temp"
         bin_home = "binaries"
         root = join(temp, bin_home)
         ver = await fetch(join(ADDR, "version"))
