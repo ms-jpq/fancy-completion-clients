@@ -172,7 +172,7 @@ async def buf_lines(nvim: Nvim) -> Sequence[str]:
 async def encode_tabnine_request(
     nvim: Nvim, context: Context, max_results: int
 ) -> TabNineRequest:
-    row = context.position.row
+    row = context.position.row + 1
     lines = await buf_lines(nvim)
     lines_before = lines[:row]
     lines_after = lines[row:]
