@@ -5,7 +5,6 @@
       "enabled": true,
       "limit": 5,
       "main": "nap-t9/rplugin/python3/nap_t9/tabnine.py",
-      "priority": 5,
       "rank": 100,
       "short_name": "T9",
       "timeout": 500
