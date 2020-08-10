@@ -4,7 +4,7 @@ Tabnine Clients for [Neovim Async comPletion](https://github.com/ms-jpq/nap)
 
 ## Install
 
-Install [`Fancy Complete`](https://github.com/ms-jpq/nap) first, then:
+Install [Neovim Async comPletion](https://github.com/ms-jpq/nap) first, then:
 
 ```VimL
 Plug 'ms-jpq/nap-t9', {'branch': 'nap', 'do': ':UpdateRemotePlugins'}
