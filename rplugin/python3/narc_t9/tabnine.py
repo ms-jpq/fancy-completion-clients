@@ -140,24 +140,25 @@ def tabnine_subproc(
     async def ooda() -> None:
         proc: Optional[Process] = None
         while True:
-            req = await send_ch.get()
             if proc and proc.returncode is None:
-                pass
+                stdin = cast(StreamWriter, proc.stdin)
+                stdout = cast(StreamReader, proc.stdout)
+
+                req = await send_ch.get()
+                stdin.write(dumps(asdict(req)).encode())
+                stdin.write(SEP)
+                await sleep(0)
+                data = await stdout.readuntil(SEP)
+
+                json = data.decode()
+                resp = loads(json)
+                decoded = decode_tabnine(resp)
+                await reply_ch.put(decoded)
             else:
                 proc = await create_subprocess_exec(
                     cast(str, t9exe), stdin=PIPE, stdout=PIPE, stderr=DEVNULL
                 )
                 log.info("%s", "created tabnine subproc")
-            stdin = cast(StreamWriter, proc.stdin)
-            stdout = cast(StreamReader, proc.stdout)
-            stdin.write(dumps(asdict(req)).encode())
-            stdin.write(SEP)
-            await sleep(0)
-            data = await stdout.readuntil(SEP)
-            json = data.decode()
-            resp = loads(json)
-            decoded = decode_tabnine(resp)
-            await reply_ch.put(decoded)
 
     async def request(req: TabNineRequest) -> Optional[TabNineResponse]:
         async def cont() -> Optional[TabNineResponse]:
