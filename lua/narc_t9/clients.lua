@@ -10,7 +10,7 @@ local init = function (location)
   local lines = fn.readfile(config)
   local json = table.concat(lines, "")
   local data = fn.json_decode(json)
-  vim.g.narc_settings_private = data
+  vim.g.narc_settings_private = vim.tbl_extend("force", (vim.g.narc_settings_private or {}), data)
 
 end
 
