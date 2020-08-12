@@ -71,6 +71,14 @@ class Context:
     syms_after: str
 
 
+@dataclass(frozen=True)
+class MEdit:
+    old_prefix: str
+    new_prefix: str
+    old_suffix: str
+    new_suffix: str
+
+
 # end exclusve
 @dataclass(frozen=True)
 class LEdit:
@@ -82,21 +90,18 @@ class LEdit:
 @dataclass(frozen=True)
 class Snippet:
     kind: str
-    content: str
     match: str
+    content: str
 
 
 @dataclass(frozen=True)
 class Completion:
     position: Position
-    old_prefix: str
-    new_prefix: str
-    old_suffix: str
-    new_suffix: str
     label: Optional[str] = None
     sortby: Optional[str] = None
     kind: Optional[str] = None
     doc: Optional[str] = None
+    medit: Optional[MEdit] = None
     ledits: Sequence[LEdit] = field(default_factory=tuple)
     snippet: Optional[Snippet] = None
 
