@@ -33,7 +33,7 @@ from pynvim.api.buffer import Buffer
 
 from .consts import __artifacts__
 from .nvim import call, run_forever
-from .types import Comm, Completion, Context, Medit, Seed, Source
+from .types import Comm, Completion, Context, MEdit, Seed, Source
 
 __exec_home__ = join(__artifacts__, "binaries")
 
@@ -214,7 +214,7 @@ def parse_rows(
         r_kind = row.kind
         kind = entry_kind_lookup.get(r_kind, "Unknown") if r_kind else None
 
-        medit = Medit(
+        medit = MEdit(
             old_prefix=old_prefix,
             new_prefix=row.new_prefix,
             old_suffix=row.old_suffix,
