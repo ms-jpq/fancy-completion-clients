@@ -10,7 +10,6 @@ from asyncio.subprocess import DEVNULL, PIPE, Process
 from dataclasses import asdict, dataclass, field
 from itertools import chain
 from json import dumps, loads
-from logging import Logger
 from os import linesep, listdir
 from os import name as os_name
 from os.path import exists, join
@@ -32,6 +31,7 @@ from pynvim import Nvim
 from pynvim.api.buffer import Buffer
 
 from .consts import __artifacts__
+from .logging import log
 from .nvim import call, run_forever
 from .types import Comm, Completion, Context, MEdit, Seed, Source
 
@@ -125,9 +125,7 @@ def decode_tabnine(resp: Any) -> Optional[TabNineResponse]:
         return None
 
 
-def tabnine_subproc(
-    log: Logger,
-) -> Optional[
+def tabnine_subproc() -> Optional[
     Tuple[
         Callable[[], Awaitable[None]],
         Callable[[TabNineRequest], Awaitable[Optional[TabNineResponse]]],
@@ -226,9 +224,9 @@ def parse_rows(
 
 
 async def main(comm: Comm, seed: Seed) -> Source:
-    nvim, log = comm.nvim, comm.log
+    nvim = comm.nvim
     max_results = round(seed.limit * 2)
-    t9_sub = tabnine_subproc(log)
+    t9_sub = tabnine_subproc()
     ooda, tabnine_inst = t9_sub if t9_sub else (None, None)
     entry_kind = await init_lua(nvim)
     entry_kind_lookup = {v: k for k, v in entry_kind.items()}
@@ -252,6 +250,6 @@ async def main(comm: Comm, seed: Seed) -> Source:
                     yield row
 
     if ooda:
-        run_forever(nvim, log=log, thing=ooda)
+        run_forever(nvim, thing=ooda)
 
     return source
