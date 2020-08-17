@@ -7,7 +7,8 @@
       "main": "narc-t9/rplugin/python3/narc_t9/tabnine.py",
       "rank": 100,
       "short_name": "T9",
-      "timeout": 100
+      "unique": false,
+      "use_cache": false
     }
   }
 }

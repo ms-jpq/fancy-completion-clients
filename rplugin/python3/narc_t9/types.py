@@ -30,7 +30,6 @@ class Comm:
 class Seed:
     match: MatchOptions
     limit: float
-    timeout: float
     config: Dict[str, Any]
 
 
@@ -109,8 +108,6 @@ class Completion:
     medit: Optional[MEdit] = None
     ledits: Sequence[LEdit] = field(default_factory=tuple)
     snippet: Optional[Snippet] = None
-    unique: bool = True
-    match_syms: bool = False
 
 
 Source = Callable[[Context], AsyncIterator[Completion]]
