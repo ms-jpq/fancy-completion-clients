@@ -70,6 +70,7 @@ class TabNineResponseL1:
     detail: Optional[str] = None
     documentation: Optional[str] = None
     deprecated: Optional[bool] = None
+    origin: Optional[str] = None
 
 
 @dataclass(frozen=True)
