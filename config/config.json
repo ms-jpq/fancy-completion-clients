@@ -8,7 +8,7 @@
       "config": {},
       "enabled": true,
       "limit": 5,
-      "main": "narc-t9/rplugin/python3/narc_t9/tabnine.py",
+      "main": "kok-t9/rplugin/python3/kok_t9/tabnine.py",
       "rank": 100,
       "short_name": "T9",
       "unique": true
