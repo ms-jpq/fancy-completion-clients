@@ -1,15 +1,15 @@
-# NARC T9
+# kok T9
 
-Tabnine Clients for [Nvim Async Reactive Complete](https://github.com/ms-jpq/narc)
+Tabnine Clients for [kok.nvim](https://github.com/ms-jpq/kok.nvim)
 
 ## Install
 
-Install [NARC](https://github.com/ms-jpq/narc) first, then:
+Install [kok.nvim](https://github.com/ms-jpq/kok.nvim) first, then:
 
 ```VimL
-Plug 'ms-jpq/narc-t9', {'branch': 'narc', 'do': ':UpdateRemotePlugins'}
+Plug 'ms-jpq/kok-t9', {'branch': 'kok', 'do': ':UpdateRemotePlugins'}
 ```
 
 ## Post Install
 
-Run `:NARCInstallTabNine` to install Tabnine before the completion can be enabled.
+Run `:KoKInstallTabNine` to install Tabnine before the completion can be enabled.
